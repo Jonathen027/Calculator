@@ -1,70 +1,113 @@
-// create two variables 
-// create function add, minus, multiply, divide.
-// create an operater variable
-// create a way to show the number in the display
-// store the number when clicking on an operater button
-// 
+// issues
+// shouldn't have mutiple decimals
+// when pressing operator button without  
 
 const numBtn = document.querySelectorAll(".cal-btn")
 const opBtn = document.querySelectorAll(".op-btn")
 const display = document.querySelector("#cal-display")
+const clearBtn = document.querySelector("#clear")
+const equal = document.querySelectorAll("#equal")
+const decimal = document.querySelector("#decimal")
 let opFlag = false;
 let totalFlag = false;
 let currentNum = "";
-let totalNum = "";
-let storageNum = "";
+let firstNum = "";
+let secondNum = "";
 let operator = "";
+let decimals = 0
 
-function numbers(){
+
+function charCount (str, char) {
+    let count = 0;
+    for (let i = 0; i < str.length; i++) {
+        if (str[i] === char) {
+            count++;
+        }
+    }
+    return count;
+}
+
+function numbers ()  {
     numBtn.forEach((i)=>{
         i.addEventListener("click", ()=>{
             if(!opFlag){
-                currentNum = parseFloat(currentNum+= i.value)
-                totalNum = currentNum
+                if (decimal.value === "."){
+                    if(i.value === "." && decimals > 1){
+                       
+                    }
+                    else {
+                        decimals =  charCount(currentNum, ".")
+                        currentNum = currentNum+= i.value
+                    }
+                 }
+                firstNum = parseFloat(currentNum)
                 display.innerText =currentNum;
             }
             else {
-                currentNum = parseFloat(currentNum+= i.value)
-                storageNum = currentNum;
-                display.innerText = currentNum
-                totalFlag = true
-            }
+                decimals =  charCount(currentNum, ".")
+                
+                currentNum = currentNum+= i.value
+                if (decimal.value === "."){
+                    if(i === "." && decimals < 1){
+                            currentNum += decimal.value
+                        }
+                     }
+                    secondNum = parseFloat(currentNum);
+                    display.innerText = currentNum
+                    totalFlag = true
+                }
+            })
         })
-    })
-}
-
-
-function operatorFunct () {
+    }
+    
+    
+    function operatorFunct () {
     opBtn.forEach((symbol)=>{
         symbol.addEventListener("click",()=>{
             opFlag = true
             currentNum = ""
-            if (!totalFlag){
-                operator = symbol.value;
-                display.innerText = operator
-            }
+            operator = symbol.value;
+            display.innerText = operator
             
-            else{
+            
+            if (totalFlag){
                 currentNum = ""
-                if(storageNum === 0 && operator === "/"){
+                if(secondNum === 0 && operator === "/"){
                     display.innerText = "cannot divide by zero"
                     operator = "+"
                 }
-               else {
-                console.log(totalNum)
-                display.innerText = totalNum;
-                operator = symbol.value;
-               }
-               totalNum = operate(totalNum,storageNum,operator)
-               
+                else {
+                    firstNum = operate(firstNum,secondNum,operator)  
+                    display.innerText = firstNum;
+                    totalFlag = false
+               }    
             }
-
         })
     })
 }
 
-numbers()
-operatorFunct()
+function clear (){
+    clearBtn.addEventListener("click", ()=>{
+        operator = ""
+        firstNum = ""
+        currentNum = ""
+        secondNum = ""
+        opFlag = false;
+        totalFlag = false;
+        display.innerText = 0
+    })
+}
+
+
+
+
+function calculator () {
+    numbers()
+    operatorFunct()
+    clear()
+}
+
+calculator()
 
 
 function adding (pastNum ,currentNum){
