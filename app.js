@@ -1,12 +1,11 @@
 // issues
 // shouldn't have mutiple decimals
-// when pressing operator button without  
 
 const numBtn = document.querySelectorAll(".cal-btn")
 const opBtn = document.querySelectorAll(".op-btn")
 const display = document.querySelector("#cal-display")
 const clearBtn = document.querySelector("#clear")
-const equal = document.querySelectorAll("#equal")
+const equalBtn = document.querySelector("#equal")
 const decimal = document.querySelector("#decimal")
 let opFlag = false;
 let totalFlag = false;
@@ -14,7 +13,9 @@ let currentNum = "";
 let firstNum = "";
 let secondNum = "";
 let operator = "";
-let decimals = 0
+let pastOperator = ""
+let decimalNum = 0;
+
 
 
 function charCount (str, char) {
@@ -31,42 +32,48 @@ function numbers ()  {
     numBtn.forEach((i)=>{
         i.addEventListener("click", ()=>{
             if(!opFlag){
-                if (decimal.value === "."){
-                    if(i.value === "." && decimals > 1){
-                       
-                    }
-                    else {
-                        decimals =  charCount(currentNum, ".")
-                        currentNum = currentNum+= i.value
-                    }
-                 }
+                currentNum = currentNum+= i.value
                 firstNum = parseFloat(currentNum)
                 display.innerText =currentNum;
+                decimalNum =  charCount(currentNum, ".")
+                if (decimalNum >=1 && i.value === "."){
+                    decimal.value = ""
+                }
             }
             else {
-                decimals =  charCount(currentNum, ".")
-                
                 currentNum = currentNum+= i.value
-                if (decimal.value === "."){
-                    if(i === "." && decimals < 1){
-                            currentNum += decimal.value
-                        }
-                     }
-                    secondNum = parseFloat(currentNum);
-                    display.innerText = currentNum
-                    totalFlag = true
+                secondNum = parseFloat(currentNum);
+                display.innerText = currentNum
+                decimalNum =  charCount(currentNum, ".")
+                totalFlag = true
+                  if (decimalNum >=1 && i.value === "."){
+                    decimal.value = ""
                 }
-            })
+            }
+
         })
-    }
+    })
+}
+
+function equal () {
+   equalBtn.addEventListener("click", ()=>{
+    console.log(firstNum)
+    console.log(secondNum)
+    firstNum = operate(firstNum,secondNum,operator) 
+    console.log(firstNum) 
+    display.innerText = firstNum;
+    totalFlag = false
+   })
+}
     
-    
-    function operatorFunct () {
+function operatorFunct () {
     opBtn.forEach((symbol)=>{
         symbol.addEventListener("click",()=>{
+            decimal.value = "."
             opFlag = true
             currentNum = ""
-            operator = symbol.value;
+            pastOperator = operator
+            operator = symbol.value; 
             display.innerText = operator
             
             
@@ -74,13 +81,13 @@ function numbers ()  {
                 currentNum = ""
                 if(secondNum === 0 && operator === "/"){
                     display.innerText = "cannot divide by zero"
-                    operator = "+"
+                    operator = ""
                 }
                 else {
-                    firstNum = operate(firstNum,secondNum,operator)  
+                    firstNum = operate(firstNum,secondNum,pastOperator)  
                     display.innerText = firstNum;
                     totalFlag = false
-               }    
+                }    
             }
         })
     })
@@ -98,13 +105,11 @@ function clear (){
     })
 }
 
-
-
-
 function calculator () {
     numbers()
     operatorFunct()
     clear()
+    equal()
 }
 
 calculator()
